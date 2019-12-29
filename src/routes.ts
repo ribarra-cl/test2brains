@@ -6,6 +6,7 @@
 
 import * as express from 'express';
 import * as path from "path";
+import * as request from 'request';
 
 const routes = (app: express.Application): void => {
 

@@ -5,9 +5,16 @@
  */
 
 import * as express from 'express';
+const bodyParser = require('body-parser');
 import routes from "./routes";
+import UsersController from "./controllers/users";
 
 const app: express.Application = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+const users = new UsersController();
+app.post('/api/users/login', users.login);
 
 routes(app);
 
