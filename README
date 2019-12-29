@@ -1,0 +1,6 @@
+Test for 2brains
+
+Create docker container
+- docker build -t test2brains .
+#push web container (dynos)
+- heroku container:push web

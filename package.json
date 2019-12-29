@@ -1,9 +1,10 @@
 {
-  "name": "2brains",
+  "name": "test2brains",
   "version": "1.0.0",
   "description": "Technical test 2brains",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon --inspect dist/app.js -e js, jade --max-old-space-size=4096",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

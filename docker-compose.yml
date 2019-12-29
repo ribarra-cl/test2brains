@@ -10,10 +10,10 @@ services:
     volumes:
       - ./dist:/app/dist
       # for public files
-      #- ./public:/app/public for front
+      - ./public:/app/public
       - ./nodemon.json:/app/nodemon.json
     # The name of our node app container
-    container_name: 2brains_ribarra
+    container_name: test2brains
     # Restarts our node app whenever it fails
     restart: always
     # Exposes the necessary ports that our node app uses
