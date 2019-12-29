@@ -6,15 +6,16 @@
 
 import * as express from 'express';
 import * as path from "path";
+import MainController from "./controllers/main.controller";
 
 const routes = (app: express.Application): void => {
 
-  app.route('/').get((req: express.Request, res: express.Response) => {
-    res.send('Hello world');
-  });
+  app.route('/').get(MainController.index);
+  app.route('/users').get(MainController.index);
 
   // static files: html, css, js, etc
-  app.use(express.static(path.join(__dirname, '../public')));
+  const staticPath = path.join(__dirname + '/../public');
+  app.use('/static', express.static(staticPath));
 
   // All other routes should 404
   app.route('/*')

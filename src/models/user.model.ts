@@ -4,8 +4,21 @@
   Date: 29 Dec 2019
  */
 
-interface IUser
+export default interface IUser
 {
-  uuid: string;
-  username: string;
+  name: {
+    title: string;
+    first: string;
+    last: string;
+  }
+  login: {
+    uuid: string;
+    username: string;
+  }
+  picture: {
+    large: string;
+    medium: string;
+    thumbnail: string;
+  }
+  email: string;
 }

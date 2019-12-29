@@ -5,9 +5,8 @@
  */
 
 import * as express from "express";
-import * as request from "request";
-import * as jwt from 'jsonwebtoken';
 import * as admin from 'firebase-admin';
+import {fetchUsers} from "../utils/users";
 
 export default class UsersController
 {
@@ -23,23 +22,16 @@ export default class UsersController
       databaseURL: "https://brains-78452.firebaseio.com"
     });
 
-
   }
 
-  // fetch users from https://randomuser.me/documentation#howto
-  fetchUsers = (callback: (users: any) => any) => {
-    const url = `https://randomuser.me/api/?results=100&seed=2brains`;
-    request(url, (error, response, body) => {
-
-      // TODO: move to logic to specific files
-      // TODO: error handling
-      const json : any = JSON.parse(body);
-      callback(json.results);
-    });
+  index = (req: express.Request, res: express.Response) => {
+    fetchUsers((users: any[]) => {
+      res.send(users);
+    })
   }
 
   login = async (req: express.Request, res: express.Response) => {
-    this.fetchUsers((users: any[]) => {
+    fetchUsers((users: any[]) => {
 
       const { username, password } = req.body;
 
