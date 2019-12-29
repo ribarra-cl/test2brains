@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
+const admin = require("firebase-admin");
 class UsersController {
     constructor() {
         this.fetchUsers = (callback) => {
@@ -20,16 +21,29 @@ class UsersController {
             });
         };
         this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            console.log("params", req);
             this.fetchUsers((users) => {
                 const { username, password } = req.body;
-                const user = users.find((user) => {
-                    if (user.login.username == username && user.login.password == password) {
+                const found = users.find((user) => {
+                    if (user.login.username == username && user.login.password == password)
                         return true;
-                    }
                 });
-                res.send(user);
+                if (found) {
+                    const user = { uuid: found.login.uuid, username: found.login.username };
+                    this.app.auth().createCustomToken(user.uuid, {
+                        username: user.username
+                    }).then((token) => {
+                        res.send({ token });
+                    });
+                }
+                else {
+                    res.status(404).send();
+                }
             });
+        });
+        const serviceAccount = require("../../brains-78452-3aa52b2692ad.json");
+        this.app = admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: "https://brains-78452.firebaseio.com"
         });
     }
 }

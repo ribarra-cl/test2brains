@@ -5,21 +5,52 @@
  */
 
 import * as React from "react";
-import {render} from "react-dom";
 import * as axios from "axios";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
-interface State
-{
+
+interface State {
+  user: {[key: string]: string}
   username: string;
   password: string;
 }
 
-export default class LoginComponent extends React.Component<{}, State>
-{
+export default class LoginComponent extends React.Component<{}, State> {
+
+  app : firebase.app.App;
 
   state = {
-    username: '',
-    password: '',
+    user: {},
+    username: 'whiteleopard798',
+    password: 'justine',
+    //username: '',
+    //password: '',
+  }
+
+  componentDidMount = () => {
+
+    // TODO: move to config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ6x5IIxsrn2IhzkcjiXQss4o7ika8zwU",
+      authDomain: "localhost:3000",
+      databaseURL: "https://brains-78452.firebaseio.com",
+      projectId: "brains-78452",
+      storageBucket: "brains-78452.appspot.com",
+      messagingSenderId: "570422194655",
+      appId: "1:570422194655:web:58681ac1f4d23abafe546a",
+      measurementId: "G-H8W77204FP"
+    };
+    this.app = firebase.initializeApp(firebaseConfig);
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if(user)
+      {
+        alert("Hola " + user.uid);
+        console.log("--auth", user);
+      }
+    })
+
   }
 
   // detect changes on inputs
@@ -27,9 +58,9 @@ export default class LoginComponent extends React.Component<{}, State>
 
     // TODO. find a better way
     const name = event.target.name;
-    if(name == 'username')
+    if (name == 'username')
       this.setState({username: event.target.value});
-    if(name == 'password')
+    if (name == 'password')
       this.setState({password: event.target.value});
 
   }
@@ -42,7 +73,12 @@ export default class LoginComponent extends React.Component<{}, State>
       }
     })
       .then((response) => {
-        console.log("--then", response);
+        const { token } = response.data;
+        firebase.auth().signInWithCustomToken(token).then((user) => {
+          console.log("--user", user);
+        }).catch((error) => {
+          console.log("error");
+        });
       }).catch((error) => {
       console.log("--error", error);
     });
@@ -51,14 +87,17 @@ export default class LoginComponent extends React.Component<{}, State>
   }
 
   render = () => {
+    const { user } = this.state;
     return (
+      <div>
       <form method="POST" onSubmit={this.onSubmit}>
         <input type="text" className="fadeIn second" name="username" placeholder="Nombre de usuario"
-               value={this.state.username} onChange={this.onChange} />
+               value={this.state.username} onChange={this.onChange}/>
         <input type="text" className="fadeIn third" name="password" placeholder="Contraseña"
-               value={this.state.password} onChange={this.onChange} />
-        <input type="submit" className="fadeIn fourth" value="Log In" />
+               value={this.state.password} onChange={this.onChange}/>
+        <input type="submit" className="fadeIn fourth" value="Log In"/>
       </form>
+      </div>
     )
   }
 }
