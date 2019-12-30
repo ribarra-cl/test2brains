@@ -7,7 +7,7 @@
 import * as React from "react";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import {BrowserRouter as Router, Route, Switch, useHistory} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import LoginComponent from "./login.component";
 import UsersComponent from "./users.component";
 import {get} from "../utils/requests";
@@ -15,17 +15,40 @@ import {connect} from "react-redux";
 import {IProfileState} from "../reducers/profile.reducer";
 import {ILoginState, loginClearAction} from "../actions/login.action";
 import {humanizeName} from "../../../../src/models/user.model";
-import PropTypes from "prop-types";
+import * as PropTypes from 'prop-types';
+import {Dispatch} from "redux";
 
-interface IPropsType
-{
-  dispatch: PropTypes.object.isRequired;
+type IPropsType = {
   login: ILoginState;
   profile: IProfileState;
 }
 
-class MainComponent extends React.Component<IPropsType, {}>
-{
+type Props = IPropsType & DispatchProps;
+
+class MainComponent extends React.Component<Props, {}> {
+
+  static defaultProps = {
+    login: {token: ''},
+    profile: {
+      user: {
+        name: {
+          title: '',
+          first: '',
+          last: ''
+        },
+        login: {
+          uuid: '',
+          username: ''
+        },
+        picture: {
+          large: '',
+          medium: '',
+          thumbnail: '',
+        },
+        email: ''
+      }
+    }
+  }
 
   unsubscribe: firebase.Unsubscribe;
 
@@ -66,7 +89,7 @@ class MainComponent extends React.Component<IPropsType, {}>
 
   render = () => {
 
-    const { login, profile } = this.props;
+    const {login, profile} = this.props;
 
     return (
       <Router>
@@ -76,14 +99,14 @@ class MainComponent extends React.Component<IPropsType, {}>
               <li>
                 <span>
                   Hola&nbsp;
-                  { login.token ?
+                  {login.token ?
                     humanizeName(profile.user) :
                     ''
                   }
                 </span>
               </li>
             </ul>
-            { login.token ?
+            {login.token ?
               <ul className="navbar-nav ml-auto">
                 <li><a href="#" onClick={this.onLogout}>Cerrar sesión</a></li>
               </ul> : null
@@ -92,8 +115,8 @@ class MainComponent extends React.Component<IPropsType, {}>
         </nav>
         <div>
           <Switch>
-          <Route exact path="/" component={LoginComponent} />
-          <Route path="/users/" component={UsersComponent} />
+            <Route exact path="/" component={LoginComponent}/>
+            <Route path="/users/" component={UsersComponent}/>
           </Switch>
         </div>
       </Router>
@@ -103,6 +126,17 @@ class MainComponent extends React.Component<IPropsType, {}>
   }
 }
 
+type DispatchProps = {
+  dispatch: Dispatch
+}
+
+const
+  mapDispatchToProps = (dispatch: Dispatch) :DispatchProps=> {
+    return {
+      dispatch
+    }
+  }
+
 const
   mapStateToProps = (state: { login: ILoginState, profile: IProfileState }) => {
     return {
@@ -111,4 +145,4 @@ const
     }
   }
 
-export default connect<{}, {}, IPropsType>(mapStateToProps)(MainComponent);
+export default connect<{}, DispatchProps, IPropsType>(mapStateToProps, mapDispatchToProps)(MainComponent);

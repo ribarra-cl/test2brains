@@ -10,8 +10,9 @@ import {withRouter} from "react-router-dom";
 import {ILoginState} from "../actions/login.action";
 import {IProfileState} from "../reducers/profile.reducer";
 import {connect} from "react-redux";
-import PropTypes from "prop-types";
+import * as PropTypes from 'prop-types';
 import {get} from "../utils/requests";
+import {Dispatch} from "redux";
 
 interface IStateType {
   loggedIn: boolean,
@@ -25,10 +26,10 @@ interface IPropsType
   login: ILoginState,
   profile: IProfileState
 
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  dispatch: PropTypes.object.isRequired
+  match: any;
+  history: any;
+  location: any;
+  dispatch: Dispatch;
 }
 
 class UsersComponent extends React.Component<IPropsType, IStateType> {

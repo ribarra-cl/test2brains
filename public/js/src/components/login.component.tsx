@@ -13,7 +13,8 @@ import {connect} from "react-redux";
 import {loadProfileDataAction} from "../actions/profile.action";
 import {ILoginState, loginSetupTokenAction} from "../actions/login.action";
 import {IProfileState} from "../reducers/profile.reducer";
-import PropTypes from 'prop-types';
+import * as PropTypes from 'prop-types';
+import {Dispatch} from "redux";
 
 
 interface IStateType {
@@ -29,10 +30,10 @@ interface IPropsType
   login: ILoginState,
   profile: IProfileState
 
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  dispatch: PropTypes.object.isRequired
+  match: any;
+  history: any;
+  location: any;
+  dispatch: Dispatch;
 }
 
 class LoginComponent extends React.Component<IPropsType, IStateType> {
