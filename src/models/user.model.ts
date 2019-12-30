@@ -22,3 +22,7 @@ export default interface IUser
   }
   email: string;
 }
+
+export const humanizeName = (user: IUser) => {
+  return `${user.name.title} ${user.name.first} ${user.name.last}`
+}

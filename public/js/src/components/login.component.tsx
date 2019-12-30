@@ -8,46 +8,42 @@ import * as React from "react";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import {get, post} from "../utils/requests";
-import IUser from "../../../../src/models/user.model";
-import {Redirect} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
+import {connect} from "react-redux";
+import {loadProfileDataAction} from "../actions/profile.action";
+import {ILoginState, loginSetupTokenAction} from "../actions/login.action";
+import {IProfileState} from "../reducers/profile.reducer";
+import PropTypes from 'prop-types';
 
 
-interface State {
+interface IStateType {
   loading: boolean;
-  user: IUser;
   error: string;
   username: string;
   password: string;
 }
 
-export default class LoginComponent extends React.Component<{}, State> {
+interface IPropsType
+{
+
+  login: ILoginState,
+  profile: IProfileState
+
+  match: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  dispatch: PropTypes.object.isRequired
+}
+
+class LoginComponent extends React.Component<IPropsType, IStateType> {
 
   unsubscribe: firebase.Unsubscribe;
 
   state = {
     loading: false,
-    user: {
-      name: {
-        title: '',
-        first: '',
-        last: ''
-      },
-      login: {
-        uuid: '',
-        username: ''
-      },
-      picture: {
-        large: '',
-        medium: '',
-        thumbnail: '',
-      },
-      email: ''
-    },
     error: '',
-    username: 'whiteleopard798',
-    password: 'justine',
-    //username: '',
-    //password: '',
+    username: '',
+    password: '',
   }
 
   componentDidMount = () => {
@@ -56,34 +52,24 @@ export default class LoginComponent extends React.Component<{}, State> {
       loading: true
     });
 
-    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      console.log("--user", user);
-      if (user) {
-        get(`/api/users/${user.uid}`)
-          .then((response) => {
-            console.log(response.data);
-            this.setState({
-              loading: false,
-              user: response.data
-            });
-            this.unsubscribe();
-          }).catch((error) => {
-            console.log(error);
-        });
-      } else {
-        this.setState({
-          loading: false
-        });
-        console.log("--no user");
-      }
-    });
 
   }
-/*
-  componentWillUnmount = () => {
-    this.unsubscribe();
+
+  componentDidUpdate = (prevProps: Readonly<IPropsType>, prevState: Readonly<IStateType>, snapshot?: any): void => {
+    const { login } = this.props;
+    console.log("prev", prevProps.login.token);
+    if(login.token)
+    {
+      console.log("--token", login.token);
+      this.props.history.push('/users');
+    }
   }
-*/
+
+  /*
+    componentWillUnmount = () => {
+      this.unsubscribe();
+    }
+  */
 
   // detect changes on inputs
   onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +95,13 @@ export default class LoginComponent extends React.Component<{}, State> {
       })
       .then((credential) => {
         // TODO: validate credential
-        const {uid} = credential.user!;
+        const { uid } = credential.user!;
+        return get(`/api/users/${uid}`);
+      })
+      .then((response) => {
+        this.props.dispatch(loginSetupTokenAction(response.data.id.value));
+        this.props.dispatch(loadProfileDataAction(response.data));
+        console.log("-- second response", response.data);
       })
       .catch((error) => {
         // TODO: improve UI
@@ -119,39 +111,10 @@ export default class LoginComponent extends React.Component<{}, State> {
 
   }
 
-  onLogout = () => {
-    firebase.auth().signOut();
-  }
-
   render = () => {
-    const { loading, user } = this.state;
 
-    if(loading)
-    {
-      return (
-        <div className="progress">
-          <div className="progress-bar progress-bar-striped progress-bar-animated"
-               role="progressbar"
-               style={{width: "100%"}}>&nbsp;</div>
-        </div>
-      );
-    }
-    else if(user.email)
-    {
-      return <Redirect to='/users' />
-    }
     return (
       <div>
-        <nav className="navbar navbar-expand-sm bg-dark navbar-dark">
-          <div className="navbar-collapse collapse">
-            <ul className="navbar-nav mr-auto">
-              <li><a href="#" onClick={this.onLogout}>Hola</a></li>
-            </ul>
-            <ul className="navbar-nav ml-auto">
-              <li><a href="#" onClick={this.onLogout}>Cerrar sesión</a></li>
-            </ul>
-          </div>
-        </nav>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-sm-auto">
@@ -178,3 +141,13 @@ export default class LoginComponent extends React.Component<{}, State> {
     )
   }
 }
+
+const
+  mapStateToProps = (state: { login: ILoginState, profile: IProfileState }) => {
+    return {
+      login: state.login,
+      profile: state.profile
+    }
+  }
+
+export default withRouter(connect<{}, {}, IPropsType>(mapStateToProps)(LoginComponent));
