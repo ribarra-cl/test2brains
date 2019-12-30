@@ -3,6 +3,12 @@ version: "2.2"
 # Define our services
 services:
   # build for backend server
+  # Redis service
+  redis:
+    container_name: redis
+    image: redis
+    expose:
+      - 6379
   app:
     build:
       dockerfile: Dockerfile.development
@@ -22,7 +28,6 @@ services:
     # All the services our node app will link to -
     # which in our case is only mongo
     # You can other services such as a Redis
-    #links:
-      # The name should be similar to the service you will build
-    #  - mongo
+    links:
+      - redis
     command: ["nodemon", "dist/app.js"]
