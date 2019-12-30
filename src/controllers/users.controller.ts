@@ -6,7 +6,8 @@
 
 import * as express from "express";
 import * as admin from 'firebase-admin';
-import {fetchUsers} from "../utils/users";
+import {fetchUsers, findUser} from "../utils/users";
+import IUser from "../models/user.model";
 
 export default class UsersController
 {
@@ -30,6 +31,13 @@ export default class UsersController
     })
   }
 
+  detail = (req: express.Request, res: express.Response) => {
+    const { uuid } = req.params;
+    findUser(uuid, (user) => {
+      res.send(user);
+    });
+  }
+
   login = async (req: express.Request, res: express.Response) => {
     fetchUsers((users: any[]) => {
 
@@ -45,16 +53,15 @@ export default class UsersController
       // user was found
       if(found)
       {
-        const user = { uuid: found.login.uuid, username: found.login.username };
-        this.app.auth().createCustomToken(user.uuid, {
-          username: user.username
-        }).then((token) => {
-          res.send({token});
+        const user = found as IUser;
+        this.app.auth().createCustomToken(user.login.uuid)
+          .then((token) => {
+            res.send({user, token});
         });
       }
       else
       {
-        res.status(404).send();
+        res.send({error: 'Usuario no encontrado.'});
       }
     });
 

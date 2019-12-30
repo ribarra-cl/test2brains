@@ -18,6 +18,12 @@ class UsersController {
                 res.send(users);
             });
         };
+        this.detail = (req, res) => {
+            const { uuid } = req.params;
+            users_1.findUser(uuid, (user) => {
+                res.send(user);
+            });
+        };
         this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
             users_1.fetchUsers((users) => {
                 const { username, password } = req.body;
@@ -26,15 +32,14 @@ class UsersController {
                         return true;
                 });
                 if (found) {
-                    const user = { uuid: found.login.uuid, username: found.login.username };
-                    this.app.auth().createCustomToken(user.uuid, {
-                        username: user.username
-                    }).then((token) => {
-                        res.send({ token });
+                    const user = found;
+                    this.app.auth().createCustomToken(user.login.uuid)
+                        .then((token) => {
+                        res.send({ user, token });
                     });
                 }
                 else {
-                    res.status(404).send();
+                    res.send({ error: 'Usuario no encontrado.' });
                 }
             });
         });

@@ -8,4 +8,10 @@ exports.fetchUsers = (callback) => {
         callback(json.results);
     });
 };
+exports.findUser = (uuid, callback) => {
+    exports.fetchUsers((users) => {
+        const user = users.find((user) => user.login.uuid = uuid);
+        callback(user);
+    });
+};
 //# sourceMappingURL=users.js.map

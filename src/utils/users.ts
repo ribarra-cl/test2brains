@@ -16,3 +16,10 @@ export const fetchUsers = (callback: (users: any) => any) => {
     callback(json.results);
   });
 }
+
+export const findUser = (uuid: string, callback: (user: any) => any) => {
+  fetchUsers((users) => {
+    const user = users.find((user: any) => user.login.uuid = uuid);
+    callback(user);
+  })
+}

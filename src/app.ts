@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 
 const users = new UsersController();
 app.get('/api/users/', users.index);
+app.get('/api/users/:uuid', users.detail);
 app.post('/api/users/login', users.login);
 
 routes(app);

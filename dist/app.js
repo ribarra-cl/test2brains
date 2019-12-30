@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const users = new users_controller_1.default();
 app.get('/api/users/', users.index);
+app.get('/api/users/:uuid', users.detail);
 app.post('/api/users/login', users.login);
 routes_1.default(app);
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
