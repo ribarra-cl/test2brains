@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from 'react-redux';
-import * as firebase from "firebase";
+import firebase from "firebase/app";
+import 'firebase/auth';
 import reducers from './reducers/index.reducer';
 import firebaseConfig from "./config/firebaseConfig";
 import MainComponent from "./components/main.component";

@@ -24,8 +24,7 @@ interface IStateType {
   password: string;
 }
 
-interface IPropsType
-{
+interface IPropsType {
 
   login: ILoginState,
   profile: IProfileState
@@ -47,20 +46,10 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
     password: '',
   }
 
-  componentDidMount = () => {
-
-    this.setState({
-      loading: true
-    });
-
-
-  }
-
   componentDidUpdate = (prevProps: Readonly<IPropsType>, prevState: Readonly<IStateType>, snapshot?: any): void => {
-    const { login } = this.props;
+    const {login} = this.props;
     console.log("prev", prevProps.login.token);
-    if(login.token)
-    {
+    if (login.token) {
       console.log("--token", login.token);
       this.props.history.push('/users');
     }
@@ -86,6 +75,8 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
 
   onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 
+    this.setState({error: '', loading: true});
+
     post(this.state)
       .then((response) => {
         const {error, token} = response.data;
@@ -96,7 +87,7 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
       })
       .then((credential) => {
         // TODO: validate credential
-        const { uid } = credential.user!;
+        const {uid} = credential.user!;
         return get(`/api/users/${uid}`);
       })
       .then((response) => {
@@ -104,9 +95,12 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
         this.props.dispatch(loadProfileDataAction(response.data));
         console.log("-- second response", response.data);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         // TODO: improve UI
-        alert(error);
+        this.setState({
+          loading: false,
+          error: error.message
+        });
       });
     event.preventDefault();
 
@@ -114,11 +108,14 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
 
   render = () => {
 
+    const {error, loading} = this.state;
+
+
     return (
       <div>
         <div className="container">
           <div className="row justify-content-center">
-            <div className="col-sm-auto">
+            <div className="col-md-auto">
               <form method="POST" onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <label htmlFor="username">Nombre de usuario</label>
@@ -127,13 +124,20 @@ class LoginComponent extends React.Component<IPropsType, IStateType> {
                 </div>
                 <div className="form-group">
                   <label htmlFor="password">Contraseña</label>
-                  <input type="password" name="password" className="form-control" id="password"
+                  <input type="password" name="password" className={error ? 'form-control is-invalid' : 'form-control'}
+                         id="password"
                          value={this.state.password} onChange={this.onChange}/>
-                  <div className="invalid-feedback">
-                    Please provide a valid city.
-                  </div>
+                  {error ?
+                    <div className="invalid-feedback">{error}</div>
+                    : null}
                 </div>
-                <button type="submit" className="btn btn-primary">Ingresar</button>
+                {loading ?
+                  <button type="submit" className="btn btn-primary">
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    &nbsp;Cargando...
+                  </button> :
+                  <button type="submit" className="btn btn-primary">Ingresar</button>
+                }
               </form>
             </div>
           </div>

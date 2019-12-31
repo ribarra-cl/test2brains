@@ -14,17 +14,20 @@ const users_1 = require("../utils/users");
 class UsersController {
     constructor() {
         this.index = (req, res) => {
+            console.log("GET /api/users");
             users_1.fetchUsers((users) => {
                 res.send(users);
             });
         };
         this.detail = (req, res) => {
             const { uuid } = req.params;
+            console.log(`GET /api/users/${uuid}`);
             users_1.findUser(uuid, (user) => {
                 res.send(user);
             });
         };
         this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log("POST /api/users/login");
             users_1.fetchUsers((users) => {
                 const { username, password } = req.body;
                 const found = users.find((user) => {

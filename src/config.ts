@@ -6,3 +6,4 @@
 
 export const REDIS_URL = process.env.REDISCLOUD_URL || 'redis://redis';
 
+export const REQUEST_FAILURE = 0.2;

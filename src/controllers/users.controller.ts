@@ -26,6 +26,7 @@ export default class UsersController
   }
 
   index = (req: express.Request, res: express.Response) => {
+    console.log("GET /api/users");
     fetchUsers((users: any[]) => {
       res.send(users);
     })
@@ -33,12 +34,14 @@ export default class UsersController
 
   detail = (req: express.Request, res: express.Response) => {
     const { uuid } = req.params;
+    console.log(`GET /api/users/${uuid}`);
     findUser(uuid, (user) => {
       res.send(user);
     });
   }
 
   login = async (req: express.Request, res: express.Response) => {
+    console.log("POST /api/users/login");
     fetchUsers((users: any[]) => {
 
       const { username, password } = req.body;
