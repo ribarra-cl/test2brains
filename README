@@ -10,13 +10,24 @@
 - Copy brains-78452-3aa52b2692ad.json root of project
 - Or create a new one firebase config file and point correctly at Dockerfile / Dockerfile.development
 
-## Backend
+## BackEnd
 __Live reload__
 ```
 docker-compose up
 ```
 
+## FrontEnd
+__Development__
+```
+cd public/js/src
+npm install
+npm start
+```
 
+__Build__
+```
+npm run-script build
+```
 
 ## Deployment on Heroku
 
