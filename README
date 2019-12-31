@@ -1,9 +1,30 @@
-Test for 2brains
+# Test for 2brains
 
-Copy .json from firebase at root
+## Development stack
+- Docker
+- NodeJS / Express for BackEnd
+- React for FrontEnd
+- Firebase for Authentication
 
-Create docker container
-- docker build -t test2brains .
-#push web container (dynos)
-- heroku container:push web
-- heroku container:release web
+## Setup
+- Copy brains-78452-3aa52b2692ad.json root of project
+- Or create a new one firebase config file and point correctly at Dockerfile / Dockerfile.development
+
+## Backend
+__Live reload__
+```
+docker-compose up
+```
+
+
+
+## Deployment on Heroku
+
+```
+heroku login
+heroku create app-name
+heroku container:push web
+heroku container:release web
+```
+
+__Ensure you have added Redis Cloud dyno for Redis Cache__
